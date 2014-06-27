@@ -1,6 +1,6 @@
 # tus
 
-[![Build Status](https://travis-ci.org/niklasvh/tus.png)](https://travis-ci.org/niklasvh/tus)
+[![Build Status](https://travis-ci.org/niklasvh/node-tus.png)](https://travis-ci.org/niklasvh/node-tus)
 [![NPM Downloads](https://img.shields.io/npm/dm/tus.svg)](https://www.npmjs.org/package/tus)
 [![NPM Version](https://img.shields.io/npm/v/tus.svg)](https://www.npmjs.org/package/tus)
 
