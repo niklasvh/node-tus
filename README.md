@@ -14,21 +14,25 @@ Node.js resumable upload middleware for [express](http://expressjs.com/)/[connec
 
 To attach the resumable upload middleware to express or connect, create an upload server by calling `createServer` passing it an `options` object. Available options are:
 
- - **directory** - Path where to upload the files
+ - **directory** - Path where to upload the files (required)
+ - **maxFileSize** - Maximum file size for uploads (optional)
  
  Example:
 
-    var express = require("express"),
-        upload = require("tus");
-    
-    var app = express();
-    var port = 3000;
-    
-    app.use("/files", upload.createServer({
-        directory: __dirname + "/uploads"
-    }));
-    
-    app.listen(port);
+```js
+var express = require("express"),
+    upload = require("tus");
+
+var app = express();
+var port = 3000;
+
+app.use("/files", upload.createServer({
+    directory: __dirname + "/uploads",
+    maxFileSize: 1024
+}));
+
+app.listen(port);
+```
 
 ## Running Tests
 

@@ -80,7 +80,8 @@ before(function() {
     var app = express();
 
     app.use("/files", upload.createServer({
-        directory: uploadDirectory
+        directory: uploadDirectory,
+        maxFileSize: 1024
     }));
 
     app.listen(port);
@@ -110,18 +111,30 @@ describe("Create server", function() {
             upload.createServer({directory: __dirname + "/simple.js"});
         }, /Specified upload directory is not a directory/);
     });
+
+    it("with invalid maxFileSize", function() {
+        assert.throws(function() {
+            upload.createServer({directory: __dirname + "/files", maxFileSize: "invalid"});
+        }, /maxFileSize option must be a number/);
+    });
 });
 
 
 describe("File creation", function() {
     it("with valid headers", function(done) {
         req.post(url)
-            .set("Entity-Length", 1337)
+            .set("Entity-Length", 1024)
             .end(function(res) {
                 assert.equal(res.status, 201);
                 assert.ok(fileMatcher.test(res.headers.location));
                 done();
             });
+    });
+
+    it("with filesize exceeding limit", function(done) {
+        req.post(url)
+            .set("Entity-Length", 2048)
+            .end(invalidResponse(done, "File exceeds maximum allowed file size of 1024 bytes"));
     });
 
     it("with invalid method", function(done) {
