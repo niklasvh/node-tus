@@ -38,6 +38,7 @@ var fileProgress = {
     }
 };
 
+var results = [];
 var fileMatcher = new RegExp("^" + host + "/files/[0-9a-z]+$");
 var uploadDirectory = __dirname + "/files";
 
@@ -85,7 +86,10 @@ before(function() {
 
     app.use("/files", upload.createServer({
         directory: uploadDirectory,
-        maxFileSize: 1024
+        maxFileSize: 1024,
+        complete: function(info) {
+            results.push(info);
+        }
     }));
 
     app.listen(port);
@@ -394,6 +398,11 @@ describe("Full upload process", function() {
                             assert.equal(meta.contentType, "image/png");
                             assert.equal(meta.filename, "file.png");
                             assert.equal(content(file), fs.readFileSync(filename).toString());
+                            var finishedMeta = results.pop();
+                            assert.equal(finishedMeta.name, file);
+                            assert.equal(finishedMeta.entityLength, 771);
+                            assert.equal(finishedMeta.meta.contentType, "image/png");
+                            assert.equal(finishedMeta.meta.filename, "file.png");
                             Promise.resolve(location)
                                 .then(checkHead(771))
                                 .then(function() {
