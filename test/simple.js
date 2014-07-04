@@ -46,7 +46,11 @@ function file(filename) {
 }
 
 function content(filename) {
-    return fs.readFileSync(uploadDirectory + "/" + filename + ".bin").toString()
+    return fs.readFileSync(uploadDirectory + "/" + filename + ".bin").toString();
+}
+
+function info(filename) {
+    return JSON.parse(fs.readFileSync(uploadDirectory + "/" + filename + ".info").toString());
 }
 
 function invalidResponse(done, message) {
@@ -360,6 +364,8 @@ function createEntry(stats) {
     return new Promise(function (resolve) {
         req.post(url)
             .set("Entity-Length", stats.size)
+            .set("Entity-Name", "file.png")
+            .set("Content-Type", "image/png")
             .end(function (res) {
                 var location = res.headers.location;
                 assert.equal(res.status, 201);
@@ -384,6 +390,9 @@ describe("Full upload process", function() {
                         .on('response', function(res) {
                             var file = location.substring(location.lastIndexOf("/") + 1);
                             assert.equal(res.status, 200);
+                            var meta = info(file).meta;
+                            assert.equal(meta.contentType, "image/png");
+                            assert.equal(meta.filename, "file.png");
                             assert.equal(content(file), fs.readFileSync(filename).toString());
                             Promise.resolve(location)
                                 .then(checkHead(771))
