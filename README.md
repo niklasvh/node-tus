@@ -17,6 +17,7 @@ To attach the resumable upload middleware to express or connect, create an uploa
  - **directory** - String - Path where to upload the files (required)
  - **maxFileSize** - Number - Maximum file size for uploads, in bytes (optional)
  - **complete** - Function - Callback to inform when a file (all chunks) have been uploaded. Passes the file metadata as an argument (optional)
+ - **path** - String - Override path to be returned for Location header when creating new files, for example if you proxy forward requests to a different host/path (optional)
  
 Example:
 

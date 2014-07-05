@@ -40,6 +40,7 @@ var fileProgress = {
 
 var results = [];
 var fileMatcher = new RegExp("^" + host + "/files/[0-9a-z]+$");
+var fileMatcherWithPrefix = new RegExp("^" + host + "/api/[0-9a-z]+$");
 var uploadDirectory = __dirname + "/files";
 
 function file(filename) {
@@ -92,6 +93,14 @@ before(function() {
         }
     }));
 
+    var secondary = express().use("/files", upload.createServer({
+        directory: uploadDirectory,
+        maxFileSize: 1024,
+        path: "/api"
+    }));
+
+    app.use("/api", secondary);
+
     app.listen(port);
 });
 
@@ -135,6 +144,16 @@ describe("File creation", function() {
             .end(function(res) {
                 assert.equal(res.status, 201);
                 assert.ok(fileMatcher.test(res.headers.location));
+                done();
+            });
+    });
+
+    it("with sub-directory", function(done) {
+        req.post(host + "/api" + path)
+            .set("Entity-Length", 1024)
+            .end(function(res) {
+                assert.equal(res.status, 201);
+                assert.ok(fileMatcherWithPrefix.test(res.headers.location));
                 done();
             });
     });
