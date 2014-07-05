@@ -35,6 +35,16 @@ var fileProgress = {
         entityLength: 10,
         content: "qwerty",
         offset: 6
+    },
+    hhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh: {
+        entityLength: 5,
+        content: "",
+        offset: 2
+    },
+    iiiiiiiiiiiiiiiiiiiiiiiiiiiiiiii: {
+        entityLength: 5,
+        content: "",
+        offset: 0
     }
 };
 
@@ -283,7 +293,7 @@ describe("File upload", function() {
         });
 
         it("with too large content-size", function (done) {
-            var file = "/cccccccccccccccccccccccccccccccc";
+            var file = "/iiiiiiiiiiiiiiiiiiiiiiiiiiiiiiii";
             req.patch(url + file)
                 .set('content-type', 'application/offset+octet-stream')
                 .set('offset', 0)
@@ -292,7 +302,7 @@ describe("File upload", function() {
         });
 
         it("with too large offset + content-size", function (done) {
-            var file = "/cccccccccccccccccccccccccccccccc";
+            var file = "/hhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh";
             req.patch(url + file)
                 .set('content-type', 'application/offset+octet-stream')
                 .set('offset', 2)
@@ -309,16 +319,16 @@ describe("File upload", function() {
                 .timeout(200)
                 .set('content-length', 50)
                 .end(function (err, res) {
+                    setTimeout(function() {
                     assert.equal(res, undefined);
                     assert.equal(content(file), "digicuicca");
-                    setTimeout(function() {
-                        req.head(url + file)
-                            .end(function (res) {
-                                assert.equal(res.status, 200);
-                                assert.equal(res.headers.offset, 10);
-                                done();
-                            });
-                    }, 100)
+                    req.head(url + file)
+                        .end(function (res) {
+                            assert.equal(res.status, 200);
+                            assert.equal(res.headers.offset, 10);
+                            done();
+                        });
+                    }, 500)
                 });
         });
 
