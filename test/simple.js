@@ -68,6 +68,7 @@ function info(filename) {
 function invalidResponse(done, message) {
     return function(res) {
         assert.equal(res.status, 400);
+        assert.equal(results.length, 0);
         assert.equal(res.text, message);
         done();
     };
@@ -76,6 +77,7 @@ function invalidResponse(done, message) {
 
 function invalidMethod(done, endpoint, actual, allowed) {
     return function(res) {
+        assert.equal(results.length, 0);
         assert.equal(res.status, 405);
         assert.equal(res.get('allow'), allowed)
         assert.equal(res.text, actual + " used against " + endpoint + ". Only " + allowed + " is allowed.");
@@ -118,6 +120,10 @@ after(function() {
     fs.readdirSync(uploadDirectory).forEach(function(filename) {
         fs.unlinkSync(uploadDirectory + "/" + filename);
     });
+});
+
+beforeEach(function() {
+   results = [];
 });
 
 describe("Create server", function() {
@@ -232,6 +238,7 @@ describe("File upload", function() {
                 .end(function (res) {
                     assert.equal(res.status, 200);
                     assert.equal(content(file), "content");
+                    assert.equal(results.length, 1);
                     done();
                 });
         });
@@ -245,6 +252,7 @@ describe("File upload", function() {
                 .end(function (res) {
                     assert.equal(res.status, 200);
                     assert.equal(content(file), "abccontent");
+                    assert.equal(results.length, 1);
                     done();
                 });
         });
@@ -258,6 +266,7 @@ describe("File upload", function() {
                 .end(function (res) {
                     assert.equal(res.status, 200);
                     assert.equal(content(file), "q1234y");
+                    assert.equal(results.length, 0);
                     req.head(url + file)
                         .end(function (res) {
                             assert.equal(res.status, 200);
@@ -276,6 +285,7 @@ describe("File upload", function() {
                 .set('content-length', 5)
                 .end(function (err, res) {
                     setTimeout(function() {
+                        assert.equal(results.length, 1);
                         assert.equal(res, undefined);
                         assert.equal(content(file), "digic");
                         done();
@@ -462,6 +472,7 @@ describe("Full upload process", function() {
             .delay(100)
             .then(checkHead(400))
             .then(function(location) {
+                assert.equal(results.length, 0);
                 fs.createReadStream(filename, {start: 400}).pipe(
                     req.patch(location)
                         .set('content-type', 'application/offset+octet-stream')
@@ -471,6 +482,7 @@ describe("Full upload process", function() {
                             var file = location.substring(location.lastIndexOf("/") + 1);
                             assert.equal(res.status, 200);
                             assert.equal(content(file), fs.readFileSync(filename).toString());
+                            assert.equal(results.length, 1);
                             Promise.resolve(location)
                                 .then(checkHead(771))
                                 .then(function() {
