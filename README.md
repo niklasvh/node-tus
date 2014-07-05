@@ -30,7 +30,7 @@ var port = 3000;
 
 app.use("/files", upload.createServer({
     directory: __dirname + "/uploads",
-    maxFileSize: 1024,
+    maxFileSize: 1024 * 1024 * 5 // 5 mb,
     complete: function(fileMetadata) {
         console.log("File uploaded with the following metadata:", fileMetadata);
     }
