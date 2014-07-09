@@ -100,8 +100,9 @@ before(function() {
     app.use("/files", upload.createServer({
         directory: uploadDirectory,
         maxFileSize: 1024,
-        complete: function(info) {
-            results.push(info);
+        complete: function(req, res) {
+            results.push(req.upload);
+            res.send(200);
         }
     }));
 

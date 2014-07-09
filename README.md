@@ -16,7 +16,7 @@ To attach the resumable upload middleware to express or connect, create an uploa
 
  - **directory** - String - Path where to upload the files (required)
  - **maxFileSize** - Number - Maximum file size for uploads, in bytes (optional)
- - **complete** - Function - Callback to inform when a file (all chunks) have been uploaded. Passes the file metadata as an argument (optional)
+ - **complete** - Function - Callback to inform when a file (all chunks) have been uploaded. Passes the request and response streams, with the metadata assigned to the `upload` property within the request. The response must be handled manually if a complete callback is used. (optional)
  - **path** - String - Override path to be returned for Location header when creating new files, for example if you proxy forward requests to a different host/path (optional)
  
 Example:
@@ -31,8 +31,9 @@ var port = 3000;
 app.use("/files", upload.createServer({
     directory: __dirname + "/uploads",
     maxFileSize: 1024 * 1024 * 5 // 5 mb,
-    complete: function(fileMetadata) {
-        console.log("File uploaded with the following metadata:", fileMetadata);
+    complete: function(req, res) {
+        console.log("File uploaded with the following metadata:", req,upload);
+        res.send(200);
     }
 }));
 
