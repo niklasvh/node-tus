@@ -32,7 +32,7 @@ app.use("/files", upload.createServer({
     directory: __dirname + "/uploads",
     maxFileSize: 1024 * 1024 * 5 // 5 mb,
     complete: function(req, res) {
-        console.log("File uploaded with the following metadata:", req,upload);
+        console.log("File uploaded with the following metadata:", req.upload);
         res.send(200);
     }
 }));
