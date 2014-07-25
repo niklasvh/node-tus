@@ -1,6 +1,6 @@
 {
   "name": "tus",
-  "version": "0.1.6",
+  "version": "0.1.7",
   "description": "Node.js resumable upload middleware for express/connect",
   "main": "lib/tus.js",
   "scripts": {
